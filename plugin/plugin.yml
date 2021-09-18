@@ -1,0 +1,6 @@
+name: PackedPluginManager 
+main: gensokyo_kenken\MainClass
+version: 0.0.closed-1
+api: 3.0.0
+load: POSTWORLD
+author: gensokyo-kenken 
