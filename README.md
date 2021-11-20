@@ -14,3 +14,12 @@ ppm update example
 ppm remove example
 ```
 ```install```などの代わりに```i[nstall]``` ```u[pdate]``` ```r[emove]```が使用出来ます。
+# リポジトリの管理
+リポジトリの追加
+```
+ppm-repo add [リポジトリのアドレスまたはURL]
+```
+リポジトリの削除
+```
+ppm-repo remove [リポジトリのアドレスまたはURL]
+```
