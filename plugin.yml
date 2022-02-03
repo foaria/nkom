@@ -1,6 +1,21 @@
-name: PackedPluginManager 
-main: gensokyo_kenken\MainClass
-version: 0.0.closed-1
-api: 3.0.0
-load: POSTWORLD
+name: Nkom
+main: foaria\Nkom\MainClass
+version: closed-2021.12.1
+api: 
+  - 3.0.0
+  - 4.0.0
 author: gensokyo-kenken 
+commands:
+  nkom:
+    description: nkomパッケージとして管理されているプラグインを管理します。
+    usage: "/nkom [ (i)nstall or add | (u)pdate | (r)e(m)ove ] [プラグイン名]"
+    permission: foaria.nkom.op
+  nkom-repo:
+    description: nkomリポジトリを管理します。
+    usage: "/nkom-repo [ (a)dd | (r)emove] [リポジトリのURL]"
+    permission: foaria.nkom.op
+permissions:
+  foaria.nkom.op:
+    description: "Server OP"
+    default: op
+prefix: nkom
