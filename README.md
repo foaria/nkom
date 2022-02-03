@@ -1,4 +1,4 @@
-# pmmp-packed-plugin-manager
+# nkom
 aptやnpmのような感覚でプラグインを管理出来るツール
 # 使い方
 プラグインのインストール
