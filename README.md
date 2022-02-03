@@ -1,25 +1,25 @@
-# nkom
+# Nkom
 aptやnpmのような感覚でプラグインを管理出来るツール
 # 使い方
 プラグインのインストール
 ```
-ppm install example
+nkom install example
 ```
 プラグインのアップデート
 ```
-ppm update example
+nkom update example
 ```
 プラグインの削除(リポジトリにない場合はプラグインの名前で削除可能)
 ```
-ppm remove example
+nkom remove example
 ```
-```install```などの代わりに```i[nstall]``` ```u[pdate]``` ```r[emove]```が使用出来ます。
+```install```などの代わりに```i[nstall]``` or ```add``` ```u[pdate]``` ```r[e]m[ove]```が使用出来ます。
 # リポジトリの管理
 リポジトリの追加
 ```
-ppm-repo add [リポジトリのアドレスまたはURL]
+nkom-repo add [リポジトリのアドレスまたはURL]
 ```
 リポジトリの削除
 ```
-ppm-repo remove [リポジトリのアドレスまたはURL]
+nkom-repo remove [リポジトリのアドレスまたはURL]
 ```
