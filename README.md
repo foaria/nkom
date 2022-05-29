@@ -13,7 +13,7 @@ nkom update example
 ```
 nkom remove example
 ```
-```install```などの代わりに```i[nstall]``` or ```add``` ```u[pdate]``` ```r[e]m[ove]```が使用出来ます。
+```install```などの代わりに```i``` or ```add```などが使用出来ます。
 # リポジトリの管理
 リポジトリの追加
 ```
