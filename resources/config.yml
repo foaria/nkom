@@ -1,0 +1,9 @@
+---
+repositorys:
+- name: "Foaria Nkom"
+  type: dynamic
+  url: https://repository.ppm.foia.ga/
+default_args:
+  auto_rm_dep_plugin: false
+  i_dep_plugin: true
+  run_depscr: true
