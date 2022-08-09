@@ -9,8 +9,6 @@ use pocketmine\Server;
 use pocketmine\utils\Config;
 use pocketmine\plugin\ApiVersion;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use foaria\Nkom\Fetch;
-require_once 'Fetch.php';
 
 class MainClass extends PluginBase{
   public function onEnable():void{
@@ -59,15 +57,15 @@ class MainClass extends PluginBase{
         }
       return false;
       //nkom end
-      case 'nkom-repo':
+      case 'nkom-registry':
         if(isset($args[0])){
           //add start
           if($args[0] == 'a' or $args[0] == 'add'){
             if(isset($args[1])){
-              $sender->sendMessage('リポジトリを追加しました。');
+              $sender->sendMessage('レジストリを追加しました。');
               return true;
             }else {
-              $sender->sendMessage("使い方: /nkom-repo ". $args[0] . " [リポジトリのURL]");
+              $sender->sendMessage("使い方: /nkom-registry ". $args[0] . " [レジストリのURL]");
               return true;
             }
           //install end
@@ -80,3 +78,5 @@ class MainClass extends PluginBase{
   //switch end
   }
 }
+
+require 'FetchInfo/Fetch.php';

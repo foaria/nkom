@@ -2,7 +2,6 @@ name: Nkom
 main: foaria\Nkom\MainClass
 version: closed-2021.12.1
 api: 
-  - 3.0.0
   - 4.0.0
 author: gensokyo-kenken 
 commands:
@@ -10,9 +9,9 @@ commands:
     description: nkomパッケージとして管理されているプラグインを管理します。
     usage: "/nkom [ (i)nstall or add | (u)pdate | (r)e(m)ove ] [プラグイン名]"
     permission: foaria.nkom.op
-  nkom-repo:
-    description: nkomリポジトリを管理します。
-    usage: "/nkom-repo [ (a)dd | (r)emove] [リポジトリのURL]"
+  nkom-registry:
+    description: nkomレジストリを管理します。
+    usage: "/nkom-registry [ (a)dd | (r)emove] [リポジトリのURL]"
     permission: foaria.nkom.op
 permissions:
   foaria.nkom.op:

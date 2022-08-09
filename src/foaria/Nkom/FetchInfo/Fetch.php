@@ -1,10 +1,8 @@
 <?php
-namespace foaria\Nkom\Fetch;
-use pocketmine\Player;
-use pocketmine\command\CommandSender;
+namespace foaria\Nkom;
 use pocketmine\scheduler\AsyncTask;
+use pocketmine\command\CommandSender;
 use pocketmine\Server;
-use pocketmine\utils\Config;
 use pocketmine\plugin\ApiVersion;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 
