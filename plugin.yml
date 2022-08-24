@@ -1,6 +1,6 @@
 name: Nkom
 main: foaria\Nkom\MainClass
-version: closed-2021.12.1
+version: closed-2022.8.14
 api: 
   - 4.0.0
 author: gensokyo-kenken 

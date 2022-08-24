@@ -1,5 +1,5 @@
 ---
-repositorys:
+registries:
 - name: "Foaria Nkom"
   type: dynamic
   url: https://repository.ppm.foia.ga/

@@ -32,7 +32,7 @@ class MainClass extends PluginBase{
                   $plugin_name = $name_no_edit[0];
                   $plugin_version = $name_no_edit[1];
               }
-              $task = new Fetch($this->config->get('repositorys'), $plugin_name, 'install', $plugin_version, $apiversion, ProtocolInfo::CURRENT_PROTOCOL ,$server, $sender);
+              $task = new Fetch($this->config->get('registries'), $plugin_name, 'install', $plugin_version, $apiversion, ProtocolInfo::CURRENT_PROTOCOL ,$server, $sender);
               $server->getAsyncPool()->submitTask($task);
               //install process end
               return true;
