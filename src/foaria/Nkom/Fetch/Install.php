@@ -6,7 +6,7 @@ use pocketmine\Server;
 use pocketmine\plugin\ApiVersion;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 
-class Fetch extends AsyncTask {
+class InstallPlugin extends AsyncTask {
   public function __construct($repos, string $name, string $query, $version, String $apiversion, $mcpe, Server $server, CommandSender $sender) {
     $this->repos = $repos;
     $this->name = $name;
@@ -21,6 +21,8 @@ class Fetch extends AsyncTask {
     $this->publishProgress('{"type":"message", "message":"プラグインを探しています..."}');
     $repos = $this->repos;
     foreach($repos as $repo){
+        $search_time = 1;
+        
         switch($repo['type']){
           case 'dynamic':
             $this->publishProgress('{"type":"message", "message":"' . $repo['name'] . 'から検索中..."}');
@@ -35,10 +37,11 @@ class Fetch extends AsyncTask {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $data =  curl_exec($ch);
-            curl_close($ch);
-            if(!$data){
+            if(curl_errno($ch)){
                 $this->publishProgress('{"type":"message", "message":"' .$repo['name'] . 'は利用できません:'.curl_error($ch) .'"}');
+                curl_close($ch);
             }else if(isset(json_decode($data, true)['info']) && !isset(json_decode($data, true)['error'])){
+                curl_close($ch);
                 $response = json_decode($data, true);
                 $this->publishProgress('{"type":"message", "message":"プラグインが見つかりました:'. $response['info']['name'] .' "}');
                 if(ApiVersion::isCompatible($this->apiversion, $response['info']['api_version'])){
@@ -88,8 +91,13 @@ class Fetch extends AsyncTask {
             }else{
                 switch(json_decode($data, true)['error']){
                   case 'version not found':
-                  $this->publishProgress('{"type":"message", "message":"§c' .$this->name. 'の指定したバージョンは存在しません。"}');
+                    $this->publishProgress('{"type":"message", "message":"§c' .$this->name. 'の指定したバージョンは存在しません。"}');
                     $this->setResult('{"exit":"error"}');
+                  case 'plugin not found':
+                    if(count($repos) == $search_time){
+                        $this->publishProgress('{"type":"message", "message":"§c' .$this->name. 'が見つかりませんでした。"}');
+                        $this->setResult('{"exit":"error"}');
+                    }
                 }
             }
           

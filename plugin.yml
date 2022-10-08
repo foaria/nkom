@@ -7,11 +7,11 @@ author: gensokyo-kenken
 commands:
   nkom:
     description: nkomパッケージとして管理されているプラグインを管理します。
-    usage: "/nkom [ (i)nstall or add | (u)pdate | (r)e(m)ove ] [プラグイン名]"
+    usage: "/nkom [ (i)nstall or add | (up)date | remove or rm ] [プラグイン名]"
     permission: foaria.nkom.op
   nkom-registry:
     description: nkomレジストリを管理します。
-    usage: "/nkom-registry [ (a)dd | (r)emove] [リポジトリのURL]"
+    usage: "/nkom-registry [ add | remove] [レジストリのURL]"
     permission: foaria.nkom.op
 permissions:
   foaria.nkom.op:
