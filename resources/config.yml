@@ -2,7 +2,7 @@
 registries:
 - name: "Foaria Nkom"
   type: dynamic
-  url: https://repository.ppm.foia.ga/
+  url: https://registry.nkom.f5.si/
 default_args:
   auto_rm_dep_plugin: false
   i_dep_plugin: true
