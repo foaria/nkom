@@ -26,13 +26,17 @@ class MainClass extends PluginBase{
               //install process start
               $apiversion = $server->getApiVersion();
               $plugin_name = $args[1];
-              $plugin_version = null;
-              if(strpos($args[1], '@') != false){
-                  $name_no_edit = explode('@', $args[1]);
-                  $plugin_name = $name_no_edit[0];
-                  $plugin_version = $name_no_edit[1];
+              if(str_starts_with($plugin_name, 'https://') or str_starts_with($plugin_name, 'http://')){
+                  $task = new InstallFromURL($plugin_name, $apiversion, ProtocolInfo::CURRENT_PROTOCOL, $server, $sender);
+              }else{
+                  $plugin_version = null;
+                  if(strpos($args[1], '@') != false){
+                      $name_no_edit = explode('@', $args[1]);
+                      $plugin_name = $name_no_edit[0];
+                      $plugin_version = $name_no_edit[1];
+                  }
+                  $task = new InstallPlugin($this->config->get('registries'), $plugin_name, 'install', $plugin_version, $apiversion, ProtocolInfo::CURRENT_PROTOCOL ,$server, $sender);
               }
-              $task = new InstallPlugin($this->config->get('registries'), $plugin_name, 'install', $plugin_version, $apiversion, ProtocolInfo::CURRENT_PROTOCOL ,$server, $sender);
               $server->getAsyncPool()->submitTask($task);
               //install process end
               return true;
@@ -80,3 +84,4 @@ class MainClass extends PluginBase{
 }
 
 require 'Fetch/Install.php';
+require 'Fetch/InstallFromURL.php';
