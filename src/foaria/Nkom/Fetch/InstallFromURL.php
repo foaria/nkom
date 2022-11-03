@@ -25,6 +25,28 @@ class InstallFromURL extends AsyncTask {
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         curl_close($ch);
+        if(preg_match('/(4|5)../', (string) $http_code) or $http_code == 334){
+            $error_codes = [];
+            $error_codes[334] = 'なんでや阪神関係ないやろ()';
+            $error_codes[400] = '不正なリクエストです。';
+            $error_codes[401] = '認証が必要です。';
+            $error_codes[403] = 'アクセス権限がありません。';
+            $error_codes[404] = '見つかりません。';
+            $error_codes[408] = 'リクエストがタイムアウトしました。';
+            $error_codes[410] = 'このリソースは削除されました。';
+            $error_codes[418] = 'Server is a teapot. §rところで開発者の推しは知っていますか？§c';
+            $error_codes[429] = 'レート制限に達しました。';
+            $error_codes[451] = '法的理由で利用できません。';
+            
+            $error_codes[500] = 'サーバーでエラーが発生しました。';
+            $error_codes[502] = 'Bad Gateway';
+            $error_codes[503] = 'メンテナンスまたはサーバーの過負荷でダウンロードできません。';
+            $error_code = $error_codes[$http_code]?$error_codes[$http_code]:'不明なエラーが発生しました。';
+            
+            $this->publishProgress('{"type":"message", "message":"§c'.$error_code.'('.$http_code.')'.'"}');
+            $this->setResult('{"exit":"error"}');
+            return;
+        }
         if($content_type != 'application/octet-stream'){
             $this->publishProgress('{"type":"message", "message":"§cMIMEタイプが不正です。('.$content_type.')"}');
             $this->setResult('{"exit":"error"}');
