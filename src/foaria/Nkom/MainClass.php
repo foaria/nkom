@@ -11,10 +11,13 @@ use pocketmine\plugin\ApiVersion;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 
 class MainClass extends PluginBase{
-  public function onEnable():void{
-      $this->saveDefaultConfig();
-      $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
-  }
+    public function onEnable():void{
+        $this->saveDefaultConfig();
+        $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
+        if(!file_exists($this->getDataFolder().'tmp')){
+            mkdir($this->getDataFolder().'tmp', 0700, true);
+        }
+    }
   public function onCommand(CommandSender $sender, Command $command, string $label, array $args):bool {
     switch($command){
       case 'nkom':
@@ -27,7 +30,7 @@ class MainClass extends PluginBase{
               $apiversion = $server->getApiVersion();
               $plugin_name = $args[1];
               if(str_starts_with($plugin_name, 'https://') or str_starts_with($plugin_name, 'http://')){
-                  $task = new InstallFromURL($plugin_name, $apiversion, ProtocolInfo::CURRENT_PROTOCOL, $server, $sender);
+                  $task = new InstallFromURL($plugin_name, $apiversion, ProtocolInfo::CURRENT_PROTOCOL, $server, $sender, $this->getDataFolder());
               }else{
                   $plugin_version = null;
                   if(strpos($args[1], '@') != false){
@@ -81,6 +84,16 @@ class MainClass extends PluginBase{
     }
   //switch end
   }
+    public function onDisable():void {
+        $tmp_glob = glob($this->getDataFolder().'tmp/*');
+        if($tmp_glob){
+            $this->getLogger()->info('一時ファイルを削除しています...');
+            foreach($tmp_glob as $tmpfilename){
+                unlink($tmpfilename);
+            }
+            $this->getLogger()->info('一時ファイルを削除しました。');
+        }
+    }
 }
 
 require 'Fetch/Install.php';

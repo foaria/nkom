@@ -7,10 +7,11 @@ use pocketmine\plugin\ApiVersion;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 
 class InstallFromURL extends AsyncTask {
-    public function __construct(String $url, String $apiversion, $mcpe, Server $server, CommandSender $sender) {
+    public function __construct(String $url, String $apiversion, $mcpe, Server $server, CommandSender $sender, String $datadir) {
         $this->url = $url;
         $this->apiversion = $apiversion;
         $this->mcpe = $mcpe;
+        $this->datadir = $datadir;
         $this->storeLocal('server', $server);
         $this->storeLocal('sender', $sender);
     }
@@ -60,22 +61,29 @@ class InstallFromURL extends AsyncTask {
             $this->setResult('{"exit":"error"}');
             return;
         }
-        $path_array = explode('/', parse_url($this->url)['path']);
-        $file_name = array_pop($path_array);
-        $phar_ext = '';
-        if($file_name == ''){
-            $file_name = array_pop($path_array);
-            $phar_ext = '.phar';
+        $tmp_filename = md5($this->url);
+        file_put_contents($this->datadir.'tmp/'.$tmp_filename.'.phar', $data);
+        $pluginymlstring = file_get_contents('phar://'.$this->datadir.'tmp/'.$tmp_filename.'.phar/plugin.yml');
+        $pluginyml = yaml_parse($pluginymlstring);
+        if(is_string($pluginyml['api'])){
+            $pluginyml['api'] = array($pluginyml['api']);
         }
-        if(file_put_contents(realpath('./plugins').'/'.$file_name.$phar_ext,$data) === false){
-            $this->publishProgress('{"type":"message", "message":"§c' .$file_name.$phar_ext. 'のインストールに失敗しました。"}');
+        if(!ApiVersion::isCompatible($this->apiversion, $pluginyml['api'])){
+            $this->publishProgress('{"type":"message", "message":"§c' .$pluginyml['name']. 'は現在実行しているPMMPと互換性がありません。"}');
+            $this->setResult('{"exit":"error", "used_tmp":true}');
+            return;
+        }
+        if(file_put_contents(realpath('./plugins').'/'.$pluginyml['name'].'.phar',$data) === false){
+            $this->publishProgress('{"type":"message", "message":"§c' .$pluginyml['name']. 'のインストールに失敗しました。"}');
         }else{
-            $this->publishProgress('{"type":"message", "message":"§a' .$file_name.$phar_ext. 'としてインストールしました。"}');
+            $this->publishProgress('{"type":"message", "message":"§a' .$pluginyml['name'].'.phar'. 'としてインストールしました。"}');
+            $this->setResult('{"exit":"", "used_tmp":true}');
         }
     }
     public function onCompletion() : void {
         $result = $this->getResult();
         $sender = $this->fetchLocal('sender');
+        $result = json_decode($result, true);
     }
     public function onProgressUpdate($log) : void {
         $sender = $this->fetchLocal('sender');
