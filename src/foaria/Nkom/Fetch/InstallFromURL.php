@@ -23,8 +23,6 @@ class InstallFromURL extends AsyncTask {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $data =  curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
-        curl_close($ch);
         if(preg_match('/(4|5)../', (string) $http_code) or $http_code == 334){
             $error_codes = [];
             $error_codes[334] = 'なんでや阪神関係ないやろ()';
@@ -44,12 +42,35 @@ class InstallFromURL extends AsyncTask {
             $error_code = $error_codes[$http_code]?$error_codes[$http_code]:'不明なエラーが発生しました。';
             
             $this->publishProgress('{"type":"message", "message":"§c'.$error_code.'('.$http_code.')'.'"}');
+            curl_close($ch);
             $this->setResult('{"exit":"error"}');
             return;
         }
-        if($content_type != 'application/octet-stream'){
-            $this->publishProgress('{"type":"message", "message":"§cMIMEタイプが不正です。('.$content_type.')"}');
+        if(preg_match('/3../', (string) $http_code)){
+            $redirect_url = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
+            $this->publishProgress('{"type":"redirect", "location":"'.$redirect_url.'"}');
+            curl_close($ch);
             $this->setResult('{"exit":"error"}');
+            return;
+        }
+        $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        if($content_type != 'application/octet-stream' and $content_type){
+            $this->publishProgress('{"type":"message", "message":"§cMIMEタイプが不正です。('.$content_type.')"}');
+            curl_close($ch);
+            $this->setResult('{"exit":"error"}');
+            return;
+        }
+        $path_array = explode('/', parse_url($this->url)['path']);
+        $file_name = array_pop($path_array);
+        $phar_ext = '';
+        if($file_name == ''){
+            $file_name = array_pop($path_array);
+            $phar_ext = '.phar';
+        }
+        if(file_put_contents(realpath('./plugins').'/'.$file_name.$phar_ext,$data) === false){
+            $this->publishProgress('{"type":"message", "message":"§c' .$file_name.$phar_ext. 'のインストールに失敗しました。"}');
+        }else{
+            $this->publishProgress('{"type":"message", "message":"§a' .$file_name.$phar_ext. 'としてインストールしました。"}');
         }
     }
     public function onCompletion() : void {
@@ -62,12 +83,9 @@ class InstallFromURL extends AsyncTask {
         if(json_decode($log, true)['type'] == 'message'){
             $sender->sendMessage(json_decode($log, true)['message']);
         }
-        if(json_decode($log, true)['type'] == 'depend'){
-            foreach(json_decode($log, true)['depend'] as $depend){
-                $repos = $this->repos;
-                $task = new Fetch($repos, $depend, 'install', null, $this->apiversion, ProtocolInfo::CURRENT_PROTOCOL ,$server, $sender);
-                $server->getAsyncPool()->submitTask($task);
-            }
+        if(json_decode($log, true)['type'] == 'redirect'){
+            $task = new InstallFromURL(json_decode($log, true)['location'], $this->apiversion, $this->mcpe, $server, $sender);
+            $server->getAsyncPool()->submitTask($task);
         }
     }
 }
