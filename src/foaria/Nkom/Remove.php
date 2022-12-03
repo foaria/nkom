@@ -58,7 +58,6 @@ class RemovePlugin extends AsyncTask {
   }
   public function onCompletion() : void {
     $result = $this->getResult();
-    var_dump($result);
     $sender = $this->fetchLocal('sender');
     $server = $this->fetchLocal('server');
     $result = json_decode($result, true);
