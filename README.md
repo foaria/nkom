@@ -14,12 +14,12 @@ nkom update example
 nkom remove example
 ```
 ```install```などの代わりに```i``` or ```add```などが使用出来ます。
-# リポジトリの管理
-リポジトリの追加
+# レジストリの管理
+レジストリの追加
 ```
-nkom-repo add [リポジトリのアドレスまたはURL]
+nkom-reg add [リポジトリのアドレスまたはURL]
 ```
-リポジトリの削除
+レジストリの削除
 ```
-nkom-repo remove [リポジトリのアドレスまたはURL]
+nkom-reg remove [リポジトリのアドレスまたはURL]
 ```
