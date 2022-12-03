@@ -7,11 +7,10 @@ use pocketmine\plugin\ApiVersion;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 
 class InstallPlugin extends AsyncTask {
-  public function __construct($repos, string $name, string $query, $version, String $apiversion, $mcpe, Server $server, CommandSender $sender) {
+  public function __construct($repos, string $name, string $query, String $apiversion, $mcpe, Server $server, CommandSender $sender) {
     $this->repos = $repos;
     $this->name = $name;
     $this->query = $query;
-    $this->version = $version;
     $this->apiversion = $apiversion;
     $this->mcpe = $mcpe;
     $this->storeLocal('server', $server);

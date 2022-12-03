@@ -4,14 +4,16 @@ version: closed-2022.11.2
 api: 
   - 4.0.0
 author: gensokyo-kenken 
+softdepend: 
+  - DevTools
 commands:
   nkom:
     description: nkomパッケージとして管理されているプラグインを管理します。
-    usage: "/nkom [ (i)nstall or add | (up)date | remove or rm ] [プラグイン名]"
+    usage: "/nkom [ (i)nstall or add | update | (un)install or unlink or remove or rm ]"
     permission: foaria.nkom.op
-  nkom-registry:
+  nkom-reg:
     description: nkomレジストリを管理します。
-    usage: "/nkom-registry [ add | remove] [レジストリのURL]"
+    usage: "/nkom-reg [ add | remove or rm ] [レジストリのURL]"
     permission: foaria.nkom.op
 permissions:
   foaria.nkom.op:

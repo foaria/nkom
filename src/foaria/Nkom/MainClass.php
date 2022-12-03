@@ -23,48 +23,60 @@ class MainClass extends PluginBase{
       case 'nkom':
         if(isset($args[0])){
           //install start
-          if($args[0] == 'i' or $args[0] == 'install' or $args[0] == 'add'){
-            if(isset($args[1])){
-              $server = $this->getServer();
-              //install process start
-              $apiversion = $server->getApiVersion();
-              $plugin_name = $args[1];
-              if(str_starts_with($plugin_name, 'https://') or str_starts_with($plugin_name, 'http://')){
-                  $task = new InstallFromURL($plugin_name, $apiversion, ProtocolInfo::CURRENT_PROTOCOL, $server, $sender, $this->getDataFolder());
-              }else{
-                  $plugin_version = null;
-                  if(strpos($args[1], '@') != false){
-                      $name_no_edit = explode('@', $args[1]);
-                      $plugin_name = $name_no_edit[0];
-                      $plugin_version = $name_no_edit[1];
-                  }
-                  $task = new InstallPlugin($this->config->get('registries'), $plugin_name, 'install', $plugin_version, $apiversion, ProtocolInfo::CURRENT_PROTOCOL ,$server, $sender);
-              }
-              $server->getAsyncPool()->submitTask($task);
-              //install process end
-              return true;
-            }else {
-              $sender->sendMessage("使い方: /nkom ". $args[0] . " [プラグイン名またはダウンロードリンク]");
-              return true;
+            if($args[0] == 'i' or $args[0] == 'install' or $args[0] == 'add'){
+                if(isset($args[1])){
+                $server = $this->getServer();
+                //install process start
+                $apiversion = $server->getApiVersion();
+                $plugin_name = $args[1];
+                if(str_starts_with($plugin_name, 'https://') or str_starts_with($plugin_name, 'http://')){
+                    $task = new InstallFromURL($plugin_name, $apiversion, ProtocolInfo::CURRENT_PROTOCOL, $server, $sender, $this->getDataFolder());
+                }else{
+                    $plugin_version = null;
+                    if(strpos($args[1], '@') != false){
+                        $name_no_edit = explode('@', $args[1]);
+                        $plugin_name = $name_no_edit[0];
+                        $plugin_version = $name_no_edit[1];
+                    }
+                $task = new InstallPlugin($this->config->get('registries'), $plugin_name, 'install', $plugin_version, $apiversion, ProtocolInfo::CURRENT_PROTOCOL ,$server, $sender);
+                }
+                $server->getAsyncPool()->submitTask($task);
+                //install process end
+                return true;
+                }else{
+                    $sender->sendMessage("使い方: /nkom ". $args[0] . " [プラグイン名またはダウンロードリンク]");
+                    return true;
+                }
+            //install end
+            }else if($args[0] == 'u' or $args[0] == 'update'){
+                if(isset($args[1])){
+                    //update process start
+                    $sender->sendMessage('アップデートを開始します。');
+                    //update process end
+                    return true;
+                }else {
+                    $sender->sendMessage("使い方: /nkom ". $args[0] . " [プラグイン名]");
+                    return true;
+                }
+            }else if($args[0] == 'remove' or $args[0] == 'rm'){
+                if(isset($args[1])){
+                    $server = $this->getServer();
+                    //update process start
+                    $sender->sendMessage('該当するプラグインを検索しています...');
+                    $task = new RemovePlugin($this->config->get('registries'), $args[1], 'remove', $server, $sender);
+                    $server->getAsyncPool()->submitTask($task);
+                    //update process end
+                    return true;
+                }else {
+                    $sender->sendMessage("使い方: /nkom ". $args[0] . " [プラグイン名]");
+                    return true;
+                }
             }
-          //install end
-          }else if($args[0] == 'u' or $args[0] == 'update'){
-            if(isset($args[1])){
-              //update process start
-              $sender->sendMessage('アップデートを開始します。');
-              //update process end
-              return true;
-            }else {
-              $sender->sendMessage("使い方: /nkom ". $args[0] . " [プラグイン名]");
-              return true;
-            }
-          }else if($args[0] == 'remove' or $args[0] == 'r' or $args[0] == 'm' or $args[0] == 'rm'){
-              }
         return false;
         }
       return false;
       //nkom end
-      case 'nkom-registry':
+      case 'nkom-reg':
         if(isset($args[0])){
           //add start
           if($args[0] == 'a' or $args[0] == 'add'){
@@ -98,3 +110,4 @@ class MainClass extends PluginBase{
 
 require 'Fetch/Install.php';
 require 'Fetch/InstallFromURL.php';
+require 'Remove.php';

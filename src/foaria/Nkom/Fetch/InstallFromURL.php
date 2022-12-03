@@ -49,9 +49,8 @@ class InstallFromURL extends AsyncTask {
         }
         if(preg_match('/3../', (string) $http_code)){
             $redirect_url = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
-            $this->publishProgress('{"type":"redirect", "location":"'.$redirect_url.'"}');
             curl_close($ch);
-            $this->setResult('{"exit":"error"}');
+            $this->setResult('{"exit":"redirect", "location":"'.$redirect_url.'"}');
             return;
         }
         $content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
@@ -83,7 +82,12 @@ class InstallFromURL extends AsyncTask {
     public function onCompletion() : void {
         $result = $this->getResult();
         $sender = $this->fetchLocal('sender');
+        $server = $this->fetchLocal('server');
         $result = json_decode($result, true);
+        if($result['exit'] == 'redirect'){
+            $task = new InstallFromURL($result['location'], $this->apiversion, $this->mcpe, $server, $sender, $this->datadir);
+            $server->getAsyncPool()->submitTask($task);
+        }
     }
     public function onProgressUpdate($log) : void {
         $sender = $this->fetchLocal('sender');
@@ -92,7 +96,7 @@ class InstallFromURL extends AsyncTask {
             $sender->sendMessage(json_decode($log, true)['message']);
         }
         if(json_decode($log, true)['type'] == 'redirect'){
-            $task = new InstallFromURL(json_decode($log, true)['location'], $this->apiversion, $this->mcpe, $server, $sender);
+            $task = new InstallFromURL(json_decode($log, true)['location'], $this->apiversion, $this->mcpe, $server, $sender, $this->datadir);
             $server->getAsyncPool()->submitTask($task);
         }
     }
