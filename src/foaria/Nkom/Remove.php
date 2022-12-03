@@ -62,7 +62,6 @@ class RemovePlugin extends AsyncTask {
     $sender = $this->fetchLocal('sender');
     $server = $this->fetchLocal('server');
     $result = json_decode($result, true);
-    var_dump($result);
     if($result['exit'] == 'found'){
         $files = glob(realpath('./plugins').'/'.$result['name'].'*');
         if(count($files) != 1){
