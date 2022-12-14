@@ -14,6 +14,8 @@ class MainClass extends PluginBase{
     public function onEnable():void{
         $this->saveDefaultConfig();
         $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
+        $this->user = new Config($this->getDataFolder() . "user.yml", Config::YAML);
+        chmod($this->getDataFolder() . "user.yml", 0700);
         if(!file_exists($this->getDataFolder().'tmp')){
             mkdir($this->getDataFolder().'tmp', 0700, true);
         }
@@ -71,6 +73,16 @@ class MainClass extends PluginBase{
                     $sender->sendMessage("使い方: /nkom ". $args[0] . " [プラグイン名]");
                     return true;
                 }
+            }else if($args[0] == 'login' or $args[0] == 'adduser' or $args[0] == 'add-user'){
+                $server = $this->getServer();
+                $task = new Login($this->config->get('registries'), $server, $sender, $this->user);
+                $server->getAsyncPool()->submitTask($task);
+                return true;
+            }else if($args[0] == 'whoami'){
+                $server = $this->getServer();
+                $task = new WhoAmI($this->config->get('registries'), $server, $sender, $this->user);
+                $server->getAsyncPool()->submitTask($task);
+                return true;
             }
         return false;
         }
@@ -84,7 +96,7 @@ class MainClass extends PluginBase{
               $sender->sendMessage('レジストリを追加しました。');
               return true;
             }else {
-              $sender->sendMessage("使い方: /nkom-registry ". $args[0] . " [レジストリのURL]");
+              $sender->sendMessage("使い方: /nkom-reg ". $args[0] . " [レジストリのURL]");
               return true;
             }
           //install end
@@ -111,3 +123,5 @@ class MainClass extends PluginBase{
 require 'Fetch/Install.php';
 require 'Fetch/InstallFromURL.php';
 require 'Remove.php';
+require 'Registry/Login.php';
+require 'Registry/WhoAmI.php';
