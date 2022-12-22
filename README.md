@@ -17,9 +17,9 @@ nkom remove example
 # レジストリの管理
 レジストリの追加
 ```
-nkom-reg add [リポジトリのアドレスまたはURL]
+nkom-reg add [レジストリのアドレスまたはURL]
 ```
 レジストリの削除
 ```
-nkom-reg remove [リポジトリのアドレスまたはURL]
+nkom-reg remove [レジストリのアドレスまたはURL]
 ```
