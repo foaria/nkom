@@ -83,6 +83,11 @@ class MainClass extends PluginBase{
                 $task = new WhoAmI($this->config->get('registries'), $server, $sender, $this->user);
                 $server->getAsyncPool()->submitTask($task);
                 return true;
+            }else if($args[0] == 'logout'){
+                $server = $this->getServer();
+                $task = new Logout($this->config->get('registries'), $server, $sender, $this->user);
+                $server->getAsyncPool()->submitTask($task);
+                return true;
             }
         return false;
         }
@@ -125,3 +130,4 @@ require 'Fetch/InstallFromURL.php';
 require 'Remove.php';
 require 'Registry/Login.php';
 require 'Registry/WhoAmI.php';
+require 'Registry/Logout.php';
