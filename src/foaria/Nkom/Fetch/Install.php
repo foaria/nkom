@@ -7,13 +7,14 @@ use pocketmine\plugin\ApiVersion;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 
 class InstallPlugin extends AsyncTask {
-  public function __construct($repos, string $name, string $query, $version, String $apiversion, $mcpe, Server $server, CommandSender $sender) {
+  public function __construct($repos, string $name, string $query, $version, String $apiversion, $mcpe, Server $server, CommandSender $sender, string $datapath) {
     $this->repos = $repos;
     $this->name = $name;
     $this->query = $query;
     $this->version = $version;
     $this->apiversion = $apiversion;
     $this->mcpe = $mcpe;
+    $this->datapath = $datapath;
     $this->storeLocal('server', $server);
     $this->storeLocal('sender', $sender);
   }
@@ -75,10 +76,11 @@ class InstallPlugin extends AsyncTask {
                     $data =  curl_exec($ch);
                     curl_close($ch);
                     if($data){
-                        if(file_put_contents(realpath('./plugins').'/'.$response['info']['name'].".phar",$data) === false){
+                        if(file_put_contents($this->datapath.'/plugins/'.$response['info']['name'].".phar",$data) === false){
                             $this->publishProgress('{"type":"message", "message":"§c' .$response['info']['name']. 'のインストールに失敗しました。"}');
                         }else{
                             $this->publishProgress('{"type":"message", "message":"§a' .$response['info']['name']. 'をインストールしました。"}');
+                            $this->publishProgress('{"type":"message", "message":"§e適用するには再起動が必要です。"}');
                         }
                     }else{
                         $this->publishProgress('{"type":"message", "message":"§c' .$response['info']['name']. 'のダウンロードに失敗しました。"}');

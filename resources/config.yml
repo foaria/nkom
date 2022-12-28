@@ -2,7 +2,7 @@
 registries:
 - name: "Foaria Nkom"
   type: dynamic
-  url: https://registry.nkom.f5.si/
+  url: https://registry.nkom.dev/
 default_args:
   auto_rm_dep_plugin: false
   i_dep_plugin: true

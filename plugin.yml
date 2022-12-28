@@ -1,6 +1,7 @@
 name: Nkom
 main: foaria\Nkom\MainClass
 version: closed-2022.11.2
+load: STARTUP
 api: 
   - 4.0.0
 author: gensokyo-kenken 
@@ -9,7 +10,7 @@ softdepend:
 commands:
   nkom:
     description: nkomパッケージとして管理されているプラグインを管理します。
-    usage: "/nkom [ (i)nstall or add | update | (un)install or unlink or remove or rm ]"
+    usage: "https://docs.nkom.dev/cli/commands を参照してください。"
     permission: foaria.nkom.op
   nkom-reg:
     description: nkomレジストリを管理します。
@@ -20,3 +21,4 @@ permissions:
     description: "Server OP"
     default: op
 prefix: nkom
+website: "https://nkom.dev/"

@@ -7,11 +7,12 @@ use pocketmine\plugin\ApiVersion;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 
 class InstallFromURL extends AsyncTask {
-    public function __construct(String $url, String $apiversion, $mcpe, Server $server, CommandSender $sender, String $datadir) {
+    public function __construct(String $url, String $apiversion, $mcpe, Server $server, CommandSender $sender, String $datadir, String $datapath) {
         $this->url = $url;
         $this->apiversion = $apiversion;
         $this->mcpe = $mcpe;
         $this->datadir = $datadir;
+        $this->datapath = $datapath;
         $this->storeLocal('server', $server);
         $this->storeLocal('sender', $sender);
     }
@@ -72,10 +73,11 @@ class InstallFromURL extends AsyncTask {
             $this->setResult('{"exit":"error", "used_tmp":true}');
             return;
         }
-        if(file_put_contents(realpath('./plugins').'/'.$pluginyml['name'].'.phar',$data) === false){
+        if(file_put_contents($datapath.'/plugins/'.$pluginyml['name'].'.phar',$data) === false){
             $this->publishProgress('{"type":"message", "message":"§c' .$pluginyml['name']. 'のインストールに失敗しました。"}');
         }else{
             $this->publishProgress('{"type":"message", "message":"§a' .$pluginyml['name'].'.phar'. 'としてインストールしました。"}');
+            $this->publishProgress('{"type":"message", "message":"§e適用するには再起動が必要です。"}');
             $this->setResult('{"exit":"", "used_tmp":true}');
         }
     }
