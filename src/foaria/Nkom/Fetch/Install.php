@@ -71,6 +71,7 @@ class InstallPlugin extends AsyncTask {
                     $ch = curl_init();
                     curl_setopt($ch, CURLOPT_URL, $response['info']['url']); 
                     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+                    curl_setopt($ch, CURLOPT_ENCODING , "");
                     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                     $data =  curl_exec($ch);

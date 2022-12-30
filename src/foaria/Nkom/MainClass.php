@@ -15,6 +15,7 @@ class MainClass extends PluginBase{
         $this->saveDefaultConfig();
         $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
         $this->user = new Config($this->getDataFolder() . "user.yml", Config::YAML);
+        $this->projects = new Config($this->getDataFolder() . "projects.yml", Config::YAML);
         chmod($this->getDataFolder() . "user.yml", 0700);
         if(!file_exists($this->getDataFolder().'tmp')){
             mkdir($this->getDataFolder().'tmp', 0700, true);
@@ -89,6 +90,37 @@ class MainClass extends PluginBase{
                     $task = new Logout($this->config->get('registries'), $server, $sender, $this->user);
                     $server->getAsyncPool()->submitTask($task);
                     return true;
+                }else if($args[0] == 'init'){
+                    if(!isset($args[1])){
+                        $sender->sendMessage("/nkom ". $args[0] . ": プロジェクトを作成して、プラグインのテンプレートを生成します。");
+                        $sender->sendMessage("使い方: /nkom ". $args[0] . " [プラグイン名]");
+                        return true;
+                    }
+                    if($this->getServer()->getPluginManager()->getPlugin("DevTools") == null){
+                        $sender->sendMessage("このコマンドを利用するにはDevToolsが必要です。");
+                        $sender->sendMessage("以下のコマンドでDevTools v1.16.0をインストールできます。");
+                        $sender->sendMessage("/nkom install https://poggit.pmmp.io/r/193473/PocketMine-DevTools.phar");
+                        return true;
+                    }
+                    $server = $this->getServer();
+                    $task = new ProjectInit($this->config->get('registries'), $args[1], $server, $server->getDataPath(), $sender, $this->user, $this->projects);
+                    $server->getAsyncPool()->submitTask($task);
+                    return true;
+                }else if($args[0] == 'importproj'){
+                    $server = $this->getServer();
+                    if(!isset($args[1])){
+                        $sender->sendMessage("/nkom ". $args[0] . ": 既存のプラグインをプロジェクトとして追加します。");
+                        $sender->sendMessage("使い方: /nkom ". $args[0] . " [プラグインのディレクトリ名]");
+                        return true;
+                    }
+                    if(!is_dir($server->getDataPath().'plugins/'.$args[1])){
+                        $sender->sendMessage("§cプロジェクトとして追加できるのはフォルダプラグインのみです。");
+                        return true;
+                    }
+                    $this->projects->set($args[1], $server->getDataPath().'plugins/'.$args[1]);
+                    $this->projects->save();
+                    $sender->sendMessage('§a'.$args[1].'をプロジェクトとして追加しました。');
+                    return true;
                 }
             return false;
             }
@@ -132,3 +164,4 @@ require 'Remove.php';
 require 'Registry/Login.php';
 require 'Registry/WhoAmI.php';
 require 'Registry/Logout.php';
+require 'Project/Init.php';

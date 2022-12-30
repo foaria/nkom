@@ -21,6 +21,7 @@ class InstallFromURL extends AsyncTask {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->url); 
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+        curl_setopt($ch, CURLOPT_ENCODING , "");
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $data =  curl_exec($ch);
@@ -73,7 +74,7 @@ class InstallFromURL extends AsyncTask {
             $this->setResult('{"exit":"error", "used_tmp":true}');
             return;
         }
-        if(file_put_contents($datapath.'/plugins/'.$pluginyml['name'].'.phar',$data) === false){
+        if(file_put_contents($this->datapath.'/plugins/'.$pluginyml['name'].'.phar',$data) === false){
             $this->publishProgress('{"type":"message", "message":"§c' .$pluginyml['name']. 'のインストールに失敗しました。"}');
         }else{
             $this->publishProgress('{"type":"message", "message":"§a' .$pluginyml['name'].'.phar'. 'としてインストールしました。"}');
