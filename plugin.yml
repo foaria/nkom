@@ -1,6 +1,6 @@
 name: Nkom
 main: foaria\Nkom\MainClass
-version: closed-2022.11.2
+version: '0.1.0-ALPHA1'
 load: STARTUP
 api: 
   - 4.0.0
@@ -22,3 +22,5 @@ permissions:
     default: op
 prefix: nkom
 website: "https://nkom.dev/"
+x-nkom-conf:
+    install-name: nkom

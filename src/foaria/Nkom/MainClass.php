@@ -121,6 +121,28 @@ class MainClass extends PluginBase{
                     $this->projects->save();
                     $sender->sendMessage('§a'.$args[1].'をプロジェクトとして追加しました。');
                     return true;
+                }else if($args[0] == 'publish'){
+                    $server = $this->getServer();
+                    if(!isset($args[1])){
+                        $sender->sendMessage("/nkom ". $args[0] . ": プラグインをレジストリに公開します。");
+                        $sender->sendMessage("使い方: /nkom ". $args[0] . " [プロジェクト(プラグイン)名またはディレクトリ名]");
+                        return true;
+                    }
+                    if(ini_get('phar.readonly') == '1'){
+                        $sender->sendMessage("§cphar.readonlyが有効になっています。プラグインを公開するには、".php_ini_loaded_file()."のphar.readonlyを0にしてください。");
+                        return true;
+                    }
+                    if($this->projects->exists($args[1])){
+                        $project = $this->projects->get($args[1]);
+                    }else if(is_dir($server->getDataPath().'plugins/'.$args[1])){
+                        $project = $server->getDataPath().'plugins/'.$args[1];
+                    }else{
+                        $sender->sendMessage("§c公開できるのはフォルダプラグインのみです。");
+                        return true;
+                    }
+                    $task = new Publish($this->config->get('registries'), $project, $server,  $sender, $server->getDataPath(), $this->user, $this->getDataFolder());
+                    $server->getAsyncPool()->submitTask($task);
+                    return true;
                 }
             return false;
             }
@@ -128,17 +150,20 @@ class MainClass extends PluginBase{
           //nkom end
           case 'nkom-reg':
             if(isset($args[0])){
-              //add start
-              if($args[0] == 'a' or $args[0] == 'add'){
-                if(isset($args[1])){
-                  $sender->sendMessage('レジストリを追加しました。');
-                  return true;
-                }else {
-                  $sender->sendMessage("使い方: /nkom-reg ". $args[0] . " [レジストリのURL]");
-                  return true;
+                //add start
+                if($args[0] == 'a' or $args[0] == 'add'){
+                    if(isset($args[1])){
+                        if(!filter_var($args[1], FILTER_VALIDATE_URL) and !(str_starts_with($args[1], 'http://') or str_starts_with($args[1], 'https://'))){
+                            $sender->sendMessage("§cHTTPまたはHTTPSのURLを入力してください。");
+                            return true;
+                        }
+                        //$sender->sendMessage('レジストリを追加しました。');
+                        return false;
+                    }else {
+                        $sender->sendMessage("使い方: /nkom-reg ". $args[0] . " [レジストリのURL]");
+                        return true;
+                    }
                 }
-              //install end
-              }
             return false;
             }
           return false;
@@ -165,3 +190,4 @@ require 'Registry/Login.php';
 require 'Registry/WhoAmI.php';
 require 'Registry/Logout.php';
 require 'Project/Init.php';
+require 'Project/Publish.php';
