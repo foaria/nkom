@@ -56,26 +56,30 @@ class Publish extends AsyncTask {
                 if(isset($response['error'])){
                     switch($response['error']){
                         case 'invalid token':
-                            $this->publishProgress('{"type":"message", "message":"トークンが無効です。ログインし直してください。"}');
+                            $this->publishProgress('{"type":"message", "message":"§cトークンが無効です。ログインし直してください。"}');
                             $this->setResult('{"exit":"error"}');
                             curl_close($ch);
                             return;
                         case 'upload prepare failed':
-                            $this->publishProgress('{"type":"message", "message":"アップロードの準備に失敗しました。"}');
+                            $this->publishProgress('{"type":"message", "message":"§cアップロードの準備に失敗しました。"}');
                             $this->setResult('{"exit":"error"}');
                             curl_close($ch);
                             return;
                         case 'name or api is required':
-                            $this->publishProgress('{"type":"message", "message":"名前とAPIバージョンは必須です。"}');
+                            $this->publishProgress('{"type":"message", "message":"§c名前とAPIバージョンは必須です。"}');
                             $this->setResult('{"exit":"error"}');
                             curl_close($ch);
                             return;
                         case 'version is required':
-                            $this->publishProgress('{"type":"message", "message":"バージョンは必須です。"}');
+                            $this->publishProgress('{"type":"message", "message":"§cバージョンは必須です。"}');
                             $this->setResult('{"exit":"error"}');
                             curl_close($ch);
                             return;
-                        
+                        case 'plugin exists':
+                            $this->publishProgress('{"type":"message", "message":"§c'.$pluginyml['x-nkom-conf']['install-name'].'は既に使用されています。"}');
+                            $this->setResult('{"exit":"error"}');
+                            curl_close($ch);
+                            return;
                     }
                 }
                 curl_close($ch);
@@ -97,29 +101,33 @@ class Publish extends AsyncTask {
                 if(isset($response['error'])){
                     switch($response['error']){
                         case 'invalid token':
-                            $this->publishProgress('{"type":"message", "message":"トークンが無効です。ログインし直してください。"}');
-                            $this->setResult('{"exit":"error"}');
+                            $this->publishProgress('{"type":"message", "message":"§cトークンが無効です。ログインし直してください。"}');
                             curl_close($ch);
+                            $this->setResult('{"exit":"error"}');
                             return;
                         case 'file size too large':
-                            $this->publishProgress('{"type":"message", "message":"プラグインのファイルサイズが大きすぎます。"}');
-                            $this->setResult('{"exit":"error"}');
+                            $this->publishProgress('{"type":"message", "message":"§cプラグインのファイルサイズが大きすぎます。"}');
                             curl_close($ch);
+                            $this->setResult('{"exit":"error"}');
                             return;
                         case 'store file failed':
-                            $this->publishProgress('{"type":"message", "message":"ファイルをレジストリに保存できませんでした。"}');
-                            $this->setResult('{"exit":"error"}');
+                            $this->publishProgress('{"type":"message", "message":"§cファイルをレジストリに保存できませんでした。"}');
                             curl_close($ch);
+                            $this->setResult('{"exit":"error"}');
                             return;
                         case 'store info failed':
-                            $this->publishProgress('{"type":"message", "message":"プラグインの情報を保存できませんでした。"}');
-                            $this->setResult('{"exit":"error"}');
+                            $this->publishProgress('{"type":"message", "message":"§cプラグインの情報を保存できませんでした。"}');
                             curl_close($ch);
+                            $this->setResult('{"exit":"error"}');
                             return;
                         
                     }
                 }
                 curl_close($ch);
+                $this->publishProgress('{"type":"message", "message":"§a'.$pluginyml['name'].' v'.$pluginyml['version'].'を'.$reg['name'].'に公開しました。"}');
+                $this->setResult('{"exit":""}');
+                return;
+                
             }
         }
     }
