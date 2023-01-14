@@ -17,6 +17,7 @@ class Publish extends AsyncTask {
         $this->storeLocal('sender', $sender);
     }
     public function onRun() : void {
+        $this->publishProgress('{"type":"message", "message":"アップロードの準備をしています..."}');
         $regs = $this->regs;
         $pluginyml = yaml_parse_file($this->datapath.$this->project.'/plugin.yml');
         foreach($regs as $reg){
@@ -80,6 +81,11 @@ class Publish extends AsyncTask {
                             $this->setResult('{"exit":"error"}');
                             curl_close($ch);
                             return;
+                        case 'invalid plugin name':
+                            $this->publishProgress('{"type":"message", "message":"§cプラグインのinstall-nameに利用できない文字が含まれています。"}');
+                            $this->setResult('{"exit":"error"}');
+                            curl_close($ch);
+                            return;
                     }
                 }
                 curl_close($ch);
@@ -87,7 +93,7 @@ class Publish extends AsyncTask {
                 $this->publishProgress('{"type":"message", "message":"プラグインをpharにアーカイブしています..."}');
                 $phar = new \Phar($this->datadir.'tmp/'.sha1($pluginyml['x-nkom-conf']['install-name'].$pluginyml['version']).'.phar');
                 $phar->buildFromDirectory($this->project, '/^(?!(.*git))(.*)$/i');
-                $phar->setStub("<?php echo 'PocketMine-MP plugin ".$pluginyml['name']." v".$pluginyml['version']."\nThis file has been generated using Nkom v0.1.0-ALPHA1\n'; __HALT_COMPILER(); ?>");
+                $phar->setStub("<?php echo 'PocketMine-MP plugin ".$pluginyml['name']." v".$pluginyml['version']."\nThis file has been generated using Nkom v0.1.0-ALPHA2\n'; __HALT_COMPILER(); ?>");
                 $this->publishProgress('{"type":"message", "message":"アップロードしています..."}');
                 curl_setopt($ch, CURLOPT_URL, $response['upload_to']); 
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
