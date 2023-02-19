@@ -135,13 +135,17 @@ class MainClass extends PluginBase{
                     if($this->projects->exists($args[1])){
                         $project = $this->projects->get($args[1]);
                     }else if(is_dir($server->getDataPath().'plugins/'.$args[1])){
-                        $project = $server->getDataPath().'plugins/'.$args[1];
+                        $project = 'plugins/'.$args[1];
                     }else{
                         $sender->sendMessage("§c公開できるのはフォルダプラグインのみです。");
                         return true;
                     }
                     $task = new Publish($this->config->get('registries'), $project, $server,  $sender, $server->getDataPath(), $this->user, $this->getDataFolder());
                     $server->getAsyncPool()->submitTask($task);
+                    return true;
+                }else if($args[0] = 'version'){
+                    $sender->sendMessage('Nkom v'.$this->getDescription()->getMap()['version']);
+                    $sender->sendMessage('対応するAPIバージョン: '.implode(", ", $this->getDescription()->getMap()['api']));
                     return true;
                 }
             return false;
