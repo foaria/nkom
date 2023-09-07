@@ -9,8 +9,8 @@ use pocketmine\lang\Language;
 
 class ProjectInit extends AsyncTask {
     public function __construct(Array $regs, String $name, Server $server, String $datapath, CommandSender $sender, $user, $projects) {
-        $this->regs = $regs;
-        $this->user = $user;
+        $this->regs = serialize($regs);
+        $this->user = serialize($user->getAll());
         $this->storeLocal('server', $server);
         $this->storeLocal('sender', $sender);
         $this->storeLocal('name', $name);
@@ -18,13 +18,13 @@ class ProjectInit extends AsyncTask {
         $this->storeLocal('datapath', $datapath);
     }
     public function onRun() : void {
-        $regs = $this->regs;
-        $user = $this->user;
+        $regs = unserialize($this->regs);
+        $user = unserialize($this->user);
         foreach($regs as $reg){
             $search_time = 1;
             switch($reg['type']){
               case 'dynamic':
-                if(!$user->get($reg['name'])){
+                if(!$user[$reg['name']]){
                     $this->publishProgress('{"type":"message", "message":"§eログインしていないため、制作者名は\'unknown\'になります。"}');
                     $author = 'unknown';
                 }
@@ -35,7 +35,7 @@ class ProjectInit extends AsyncTask {
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $reg['url'] . '/user/?' . http_build_query($params)); 
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: token '. $user->get($reg['name'])));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: token '. $user[$reg['name']]));
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 $data =  curl_exec($ch);

@@ -7,13 +7,13 @@ use pocketmine\utils\Config;
 
 class Login extends AsyncTask {
     public function __construct(Array $regs, Server $server, CommandSender $sender, Config $user) {
-        $this->regs = $regs;
+        $this->regs = serialize($regs);
         $this->storeLocal('server', $server);
         $this->storeLocal('sender', $sender);
         $this->storeLocal('user', $user);
     }
     public function onRun() : void {
-        $regs = $this->regs;
+        $regs = unserialize($this->regs);
         foreach($regs as $reg){
             $search_time = 1;
             switch($reg['type']){

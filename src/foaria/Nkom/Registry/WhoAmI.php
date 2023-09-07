@@ -7,20 +7,20 @@ use pocketmine\utils\Config;
 
 class WhoAmI extends AsyncTask {
   public function __construct(Array $regs, Server $server, CommandSender $sender, Config $user) {
-    $this->regs = $regs;
+    $this->regs = serialize($regs);
     $this->storeLocal('server', $server);
     $this->storeLocal('sender', $sender);
     $this->storeLocal('user', $user);
-    $this->user = $user;
+    $this->user = serialize($user->getAll());
   }
   public function onRun() : void {
-    $regs = $this->regs;
-    $user = $this->user;
+    $regs = unserialize($this->regs);
+    $user = unserialize($this->user);
     foreach($regs as $reg){
         $search_time = 1;
         switch($reg['type']){
           case 'dynamic':
-            if(!$user->get($reg['name'])){
+            if(!$user[$reg['name']]){
                 $this->publishProgress('{"type":"message", "message":"' .$reg['name']. ': ログインしていません。"}');
                 $this->setResult('{"exit":""}');
                 return;
@@ -32,7 +32,7 @@ class WhoAmI extends AsyncTask {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $reg['url'] . '/user/?' . http_build_query($params)); 
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: token '. $user->get($reg['name'])));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: token '. $user[$reg['name']]));
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $data =  curl_exec($ch);

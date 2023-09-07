@@ -8,10 +8,10 @@ use pocketmine\network\mcpe\protocol\ProtocolInfo;
 
 class Publish extends AsyncTask {
     public function __construct($regs, string $project, Server $server, CommandSender $sender, string $datapath, $users, string $datadir, string $nkom_version) {
-        $this->regs = $regs;
+        $this->regs = serialize($regs);
         $this->project = $project;
         $this->datapath = $datapath;
-        $this->users = $users;
+        $this->users = serialize($users->getAll());
         $this->datadir = $datadir;
         $this->nkom_version = $nkom_version;
         $this->storeLocal('server', $server);
@@ -19,7 +19,8 @@ class Publish extends AsyncTask {
     }
     public function onRun() : void {
         $this->publishProgress('{"type":"message", "message":"アップロードの準備をしています..."}');
-        $regs = $this->regs;
+        $regs = unserialize($this->regs);
+        $users = unserialize($this->users);
         $pluginyml = yaml_parse_file($this->datapath.$this->project.'/plugin.yml');
         foreach($regs as $reg){
             $search_time = 1;
@@ -44,7 +45,7 @@ class Publish extends AsyncTask {
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, $reg['url'].'/publish/init/'); 
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: token '. $this->users->get($reg['name'], 'Content-Type: application/json')));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: token '. $users[$reg['name']], 'Content-Type: application/json'));
                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($req));
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -98,7 +99,7 @@ class Publish extends AsyncTask {
                 $this->publishProgress('{"type":"message", "message":"アップロードしています..."}');
                 curl_setopt($ch, CURLOPT_URL, $response['upload_to']); 
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: token '. $this->users->get($reg['name'], 'Content-Type: application/octet-stream')));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: token '. $users[$reg['name']], 'Content-Type: application/octet-stream'));
                 curl_setopt($ch, CURLOPT_POSTFIELDS, file_get_contents($this->datadir.'tmp/'.sha1($pluginyml['x-nkom-conf']['install-name'].$pluginyml['version']).'.phar'));
                 curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
                 curl_setopt($ch, CURLOPT_POST, true);
