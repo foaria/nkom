@@ -7,8 +7,8 @@ use pocketmine\plugin\ApiVersion;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 
 class InstallPlugin extends AsyncTask {
-  public function __construct($repos, string $name, string $query, $version, String $apiversion, $mcpe, Server $server, CommandSender $sender, string $datapath) {
-    $this->repos = $repos;
+  public function __construct($regs, string $name, string $query, $version, String $apiversion, $mcpe, Server $server, CommandSender $sender, string $datapath) {
+    $this->regs = serialize($regs);
     $this->name = $name;
     $this->query = $query;
     $this->version = $version;
@@ -20,26 +20,26 @@ class InstallPlugin extends AsyncTask {
   }
   public function onRun() : void {
     $this->publishProgress('{"type":"message", "message":"プラグインを探しています..."}');
-    $repos = $this->repos;
-    foreach($repos as $repo){
+    $regs = unserialize($this->regs);
+    foreach($regs as $reg){
         $search_time = 1;
         
-        switch($repo['type']){
+        switch($reg['type']){
           case 'dynamic':
-            $this->publishProgress('{"type":"message", "message":"' . $repo['name'] . 'から検索中..."}');
+            $this->publishProgress('{"type":"message", "message":"' . $reg['name'] . 'から検索中..."}');
             $params = [
                 'type' => $this->query,
                 'name' => $this->name,
                 'version' => $this->version,
             ];
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $repo['url'] . '?' . http_build_query($params)); 
+            curl_setopt($ch, CURLOPT_URL, $reg['url'] . '?' . http_build_query($params)); 
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $data =  curl_exec($ch);
             if(curl_errno($ch)){
-                $this->publishProgress('{"type":"message", "message":"' .$repo['name'] . 'は利用できません:'.curl_error($ch) .'"}');
+                $this->publishProgress('{"type":"message", "message":"' .$reg['name'] . 'は利用できません:'.curl_error($ch) .'"}');
                 curl_close($ch);
             }else if(isset(json_decode($data, true)['info']) && !isset(json_decode($data, true)['error'])){
                 curl_close($ch);
@@ -97,7 +97,7 @@ class InstallPlugin extends AsyncTask {
                     $this->publishProgress('{"type":"message", "message":"§c' .$this->name. 'の指定したバージョンは存在しません。"}');
                     $this->setResult('{"exit":"error"}');
                   case 'plugin not found':
-                    if(count($repos) == $search_time){
+                    if(count($regs) == $search_time){
                         $this->publishProgress('{"type":"message", "message":"§c' .$this->name. 'が見つかりませんでした。"}');
                         $this->setResult('{"exit":"error"}');
                     }
@@ -120,8 +120,8 @@ class InstallPlugin extends AsyncTask {
     }
     if(json_decode($log, true)['type'] == 'depend'){
         foreach(json_decode($log, true)['depend'] as $depend){
-            $repos = $this->repos;
-            $task = new Fetch($repos, $depend, 'install', null, $this->apiversion, ProtocolInfo::CURRENT_PROTOCOL ,$server, $sender);
+            $regs = $this->regs;
+            $task = new Fetch($regs, $depend, 'install', null, $this->apiversion, ProtocolInfo::CURRENT_PROTOCOL ,$server, $sender);
             $server->getAsyncPool()->submitTask($task);
         }
     }

@@ -39,6 +39,7 @@ class WhoAmI extends AsyncTask {
             if(curl_errno($ch)){
                 $this->publishProgress('{"type":"message", "message":"' .$reg['name'] . 'は利用できません:'.curl_error($ch) .'"}');
                 curl_close($ch);
+                return;
             }
             curl_close($ch);
             $response = json_decode($data, true);

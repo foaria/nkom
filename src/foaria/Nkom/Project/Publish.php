@@ -7,12 +7,13 @@ use pocketmine\plugin\ApiVersion;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 
 class Publish extends AsyncTask {
-    public function __construct($regs, string $project, Server $server, CommandSender $sender, string $datapath, $users, string $datadir) {
+    public function __construct($regs, string $project, Server $server, CommandSender $sender, string $datapath, $users, string $datadir, string $nkom_version) {
         $this->regs = $regs;
         $this->project = $project;
         $this->datapath = $datapath;
         $this->users = $users;
         $this->datadir = $datadir;
+        $this->nkom_version = $nkom_version;
         $this->storeLocal('server', $server);
         $this->storeLocal('sender', $sender);
     }
@@ -93,7 +94,7 @@ class Publish extends AsyncTask {
                 $this->publishProgress('{"type":"message", "message":"プラグインをpharにアーカイブしています..."}');
                 $phar = new \Phar($this->datadir.'tmp/'.sha1($pluginyml['x-nkom-conf']['install-name'].$pluginyml['version']).'.phar');
                 $phar->buildFromDirectory($this->project, '/^(?!(.*git))(.*)$/i');
-                $phar->setStub("<?php echo 'PocketMine-MP plugin ".$pluginyml['name']." v".$pluginyml['version']."\nThis file has been generated using Nkom v0.1.0-ALPHA2\n'; __HALT_COMPILER(); ?>");
+                $phar->setStub("<?php echo 'PocketMine-MP plugin ".$pluginyml['name']." v".$pluginyml['version']."\nThis file has been generated using Nkom v'. $this->nkom_version .'\n'; __HALT_COMPILER(); ?>");
                 $this->publishProgress('{"type":"message", "message":"アップロードしています..."}');
                 curl_setopt($ch, CURLOPT_URL, $response['upload_to']); 
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');

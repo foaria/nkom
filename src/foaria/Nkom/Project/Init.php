@@ -70,8 +70,6 @@ class ProjectInit extends AsyncTask {
         $result = json_decode($result, true);
         if($result['exit'] = 'author'){
             $server->dispatchCommand(new ConsoleCommandSender($server, new Language('jpn')), 'genplugin '.$name.' '.$result['author']);
-            $projects->set($name, 'plugins/'.$name);
-            $projects->save();
             $sender->sendMessage('§a'.$name.'のプロジェクトを作成しました。');
         }
     }
